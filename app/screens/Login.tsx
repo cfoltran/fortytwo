@@ -4,6 +4,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { OAUTH_CLIENT_ID } from '@env';
+import axios from 'axios';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -28,6 +29,20 @@ const Login = ({ navigation, route }) => {
     } catch(e) {
       console.error(e);
     }
+  };
+
+  const isValidToken = async () => {
+    try {
+      const res = await axios.get('/oauth/token/info');
+      console.log(res);
+    } catch (e) {
+      return false;
+      console.error(e);
+    }
+  };
+
+  const getToken = async () => {
+    console.log('getToken');
   }
 
   React.useEffect(() => {
@@ -38,6 +53,19 @@ const Login = ({ navigation, route }) => {
     };
     getCode();
   }, [response]);
+
+  React.useEffect(() => {
+    const authGuard = async () => {
+      console.warn('Auth guard')
+      const store = await getStore();
+      if (isValidToken()) {
+        console.log('top');
+      } else {
+        getToken();
+      }
+    }
+    authGuard();
+  })
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
@@ -56,5 +84,5 @@ const Login = ({ navigation, route }) => {
 export default Login;
 
 export interface IStore {
-  token: string;
+  code: string;
 }
