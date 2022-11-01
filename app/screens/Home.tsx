@@ -1,8 +1,5 @@
-import { Text, View, Button } from 'react-native';
+import { Text, View } from 'react-native';
 import React from 'react';
-import * as WebBrowser from 'expo-web-browser';
-
-WebBrowser.maybeCompleteAuthSession();
 
 const Home = ({ navigation, route }) => {
   return (
