@@ -3,7 +3,7 @@ import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OAUTH_CLIENT_ID, OAUTH_UID, OAUTH_SECRET } from '@env';
+import { OAUTH_CLIENT_ID, OAUTH_SECRET } from '@env';
 import axios from 'axios';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -21,24 +21,16 @@ const Login = ({ navigation, route }) => {
     authorizationEndpoint: 'https://api.intra.42.fr/oauth/authorize'
   });
 
-  const getStore = async () => {
-    try {
-      const value = await AsyncStorage.getItem('@main')
-      if (value !== null) {
-        return value;
-      }
-    } catch(e) {
-      console.error(e);
-    }
-  };
-
   const isValidToken = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/oauth/token/info`);
-      console.log('👇');
-      console.log(res);
-      return true;
+      const res = await axios.get(`${baseUrl}/oauth/token/info`, {
+        headers: {
+          Authorization: `Bearer ${ await AsyncStorage.getItem('@token') }`
+        }
+      });
+      return res.data.expires_in_seconds > 5;
     } catch (e) {
+
       console.error(e);
       return false;
     }
@@ -52,7 +44,8 @@ const Login = ({ navigation, route }) => {
         'client_secret': OAUTH_SECRET,
         code: await AsyncStorage.getItem('@code')
       });
-      console.log(res);
+      console.log(res.data);
+      await AsyncStorage.setItem('@token', res.data.access_token ? res.data.access_token : null);
     } catch (e) {
       console.error(e);
     }
@@ -70,8 +63,8 @@ const Login = ({ navigation, route }) => {
   React.useEffect(() => {
     const authGuard = async () => {
       console.warn('Auth guard')
-      const store = await getStore();      
       if (await isValidToken()) {
+        console.warn('valid token');
         navigation.replace('Home');
       } else {
         await getToken();
