@@ -1,5 +1,6 @@
-import { View, TextInput, StyleSheet } from 'react-native';
+import { View, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { API_BASE_URL } from '@env';
+import ProfileItems from '../components/ProfileItems'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
 import axios from 'axios';
@@ -8,18 +9,20 @@ const baseURL = API_BASE_URL;
 
 const Search = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState("");
+  const [users, onChangeUsers ] = React.useState(); 
 
   const search = async () => {
     try {
-      const res = await axios.get(`${baseURL}/v2/users/${text}`, {
+      console.log('in search');
+      const res = await axios.get(`${baseURL}/v2/users/`, {
         params: {
-          'search[login]': await AsyncStorage.getItem('@token'),
+          'search[login]': text,
         },
         headers: {
-          Authorization: `Bearer `
+          Authorization: `Bearer ${await AsyncStorage.getItem('@token')}`
         }
       });
-      console.log(res.data);
+      onChangeUsers(res.data);
     } catch (e) {
       console.error(e);
     }
@@ -27,7 +30,7 @@ const Search = ({ navigation, route }) => {
 
   React.useEffect(() => {
     search();
-  }, [text])
+  }, [text]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'flex-end', padding: 10 }}>
@@ -36,6 +39,9 @@ const Search = ({ navigation, route }) => {
         onChangeText={onChangeText}
         value={text}
       />
+      <ScrollView>
+        <ProfileItems users={users} />
+      </ScrollView>
     </View>
   );
 }
