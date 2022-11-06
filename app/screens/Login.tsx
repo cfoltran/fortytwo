@@ -3,12 +3,12 @@ import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OAUTH_CLIENT_ID, OAUTH_SECRET } from '@env';
+import { OAUTH_CLIENT_ID, OAUTH_SECRET, API_BASE_URL } from '@env';
 import axios from 'axios';
 
 WebBrowser.maybeCompleteAuthSession();
 
-const baseUrl = 'https://api.intra.42.fr';
+const baseURL = API_BASE_URL;
 
 const Login = ({ navigation, route }) => {
   const [code, setCode] = React.useState();
@@ -18,12 +18,13 @@ const Login = ({ navigation, route }) => {
     scopes: ['public', 'projects'],
     redirectUri: 'fortytwo://oauth',
   }, {
-    authorizationEndpoint: 'https://api.intra.42.fr/oauth/authorize'
+    authorizationEndpoint: `${baseURL}/oauth/authorize`
   });
 
   const isValidToken = async () => {
     try {
-      const res = await axios.get(`${baseUrl}/oauth/token/info`, {
+      console.log(`${baseURL}/oauth/token/info`);
+      const res = await axios.get(`${baseURL}/oauth/token/info`, {
         headers: {
           Authorization: `Bearer ${ await AsyncStorage.getItem('@token') }`
         }
@@ -38,7 +39,7 @@ const Login = ({ navigation, route }) => {
 
   const getToken = async () => {
     try {
-      const res = await axios.post(`${baseUrl}/oauth/token`, {
+      const res = await axios.post(`${baseURL}/oauth/token`, {
         'grant_type': 'client_credentials',
         'client_id': OAUTH_CLIENT_ID,
         'client_secret': OAUTH_SECRET,

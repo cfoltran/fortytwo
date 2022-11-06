@@ -1,12 +1,13 @@
-import { Text, View } from 'react-native';
+import { Text, View, Button } from 'react-native';
 import React from 'react';
 
 const Home = ({ navigation, route }) => {
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
-      <Text>
-          HOME
-      </Text>
+    <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'flex-end' }}>
+      <Button
+        title="Search"
+        onPress={() => { navigation.replace('Search') }}
+      />
     </View>
   );
 }
