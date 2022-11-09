@@ -37,12 +37,15 @@ const Search = ({ navigation, route }) => {
   }, [text]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'flex-end', padding: 10 }}>
-      <TextInput
-        style={styles.input}
-        onChangeText={onChangeText}
-        value={text}
-      />
+    <View style={{ padding: 10 }}>
+      <View style={{ marginBottom: 10 }}>
+        <TextInput
+          style={styles.input}
+          onChangeText={onChangeText}
+          value={text}
+        />
+      </View>
+
       <ScrollView>
         <ProfileItems users={users} />
       </ScrollView>
@@ -52,8 +55,8 @@ const Search = ({ navigation, route }) => {
 
 const styles = StyleSheet.create({
   input: {
-    height: 40,
     width: '100%',
+    height: 40,
     padding: 10,
     borderWidth: 1,
     textAlign: 'center',

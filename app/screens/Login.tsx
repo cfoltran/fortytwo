@@ -77,10 +77,9 @@ const Login = ({ navigation, route }) => {
   return (
     <View style={{ flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' }}>
       <Text>
-          Click to connect to intra
+        Click to connect to intra
       </Text>
       <Button
-        // disabled={!request}
         title="Connect"
         onPress={() => { promptAsync() }}
       />
