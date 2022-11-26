@@ -14,7 +14,6 @@ const Search = ({ navigation, route }) => {
 
   const search = async () => {
     try {
-      console.log('in search');
       const res = await axios.get(`${baseURL}/v2/users/`, {
         params: {
           'search[login]': text,
