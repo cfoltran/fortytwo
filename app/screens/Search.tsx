@@ -47,7 +47,7 @@ const Search = ({ navigation, route }) => {
       </View>
 
       <ScrollView>
-        <ProfileItems users={users} />
+        <ProfileItems users={users} navigation={navigation} />
       </ScrollView>
     </View>
   );
