@@ -10,6 +10,20 @@ WebBrowser.maybeCompleteAuthSession();
 
 const baseURL = API_BASE_URL;
 
+export const isValidToken = async () => {
+  try {
+    const res = await axios.get(`${baseURL}/oauth/token/info`, {
+      headers: {
+        Authorization: `Bearer ${ await AsyncStorage.getItem('@token') }`
+      }
+    });
+    return res.data.expires_in_seconds > 5;
+  } catch (e) {
+    console.error(e);
+    return false;
+  }
+};
+
 const Login = ({ navigation, route }) => {
   const [code, setCode] = React.useState();
 
@@ -21,31 +35,15 @@ const Login = ({ navigation, route }) => {
     authorizationEndpoint: `${baseURL}/oauth/authorize`
   });
 
-  const isValidToken = async () => {
-    try {
-      console.log(`${baseURL}/oauth/token/info`);
-      const res = await axios.get(`${baseURL}/oauth/token/info`, {
-        headers: {
-          Authorization: `Bearer ${ await AsyncStorage.getItem('@token') }`
-        }
-      });
-      return res.data.expires_in_seconds > 5;
-    } catch (e) {
-
-      console.error(e);
-      return false;
-    }
-  };
-
   const getToken = async () => {
     try {
+      await AsyncStorage.removeItem('@code');
       const res = await axios.post(`${baseURL}/oauth/token`, {
         'grant_type': 'client_credentials',
         'client_id': OAUTH_CLIENT_ID,
         'client_secret': OAUTH_SECRET,
         code: await AsyncStorage.getItem('@code')
       });
-      console.log(res.data);
       await AsyncStorage.setItem('@token', res.data.access_token ? res.data.access_token : null);
     } catch (e) {
       console.error(e);
@@ -63,9 +61,7 @@ const Login = ({ navigation, route }) => {
 
   React.useEffect(() => {
     const authGuard = async () => {
-      console.warn('Auth guard')
       if (await isValidToken()) {
-        console.warn('valid token');
         navigation.replace('Home');
       } else {
         await getToken();

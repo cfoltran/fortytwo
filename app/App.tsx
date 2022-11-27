@@ -7,6 +7,8 @@ import Login from './screens/Login';
 import Home from './screens/Home';
 import Search from './screens/Search';
 import Profile from './screens/Profile';
+import { Button } from 'react-native';
+import { isValidToken } from './screens/Login';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -37,12 +39,28 @@ function HomeTabScreen() {
 }
 
 function App() {
+  React.useEffect(() => {
+    isValidToken()
+  });
+
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Home" component={HomeTabScreen} />
-        <Stack.Screen name="Profile" component={Profile} />
+        <Stack.Screen
+          options={({ navigation }) => ({
+            headerShown: true,
+            headerLeft: () => (
+              <Button
+                onPress={() => navigation.replace('Search') }
+                title="Back"
+              />
+            ),
+          })}
+          name="Profile"
+          component={Profile}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

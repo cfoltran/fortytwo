@@ -5,10 +5,10 @@ const SearchItems = ({ users, navigation }) => {
   return (
     users?.map(user => {
       return (
-        <View>
+        <View key={ user.id }>
           <TouchableOpacity
             style={{ flex: 1, flexDirection: 'row' }}
-            onPress={() => { navigation.replace('Profile') }}
+            onPress={() => { navigation.replace('Profile', { userId: user.id }) }}
           >
             <Image
               source={{ uri: user.image.versions.small }}
