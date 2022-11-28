@@ -32,7 +32,7 @@ const Search = ({ navigation, route }) => {
     if (timePassed) {
       clearTimeout(timePassed);
     }
-    setTimeout(() => search(), 1000);
+    setTimeout(() => search(), 2000);
   }, [text]);
 
   return (

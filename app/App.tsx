@@ -53,7 +53,7 @@ function App() {
             headerShown: true,
             headerLeft: () => (
               <Button
-                onPress={() => navigation.replace('Search') }
+                onPress={() => navigation.replace('Home') }
                 title="Back"
               />
             ),
