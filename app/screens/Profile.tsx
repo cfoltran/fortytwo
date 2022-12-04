@@ -1,7 +1,7 @@
 import { View, Image, Text, StyleSheet } from 'react-native';
 import React, { useRef } from 'react';
 import axios from 'axios';
-import { Picker } from '@react-native-picker/picker';
+import RNPickerSelect from 'react-native-picker-select';
 import { API_BASE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,19 +25,8 @@ const style = StyleSheet.create({
 
 const Profile = ({ route }) => {
   const [user, setUser]: any[] = React.useState();
-  const [cursus, setCursus] = React.useState();
-  const [projects, setProjects] = React.useState();
-
-  // const pickerRef = useRef();
-
-  // function open() {
-  //   pickerRef.current.focus();
-  // }
-
-  // function close() {
-  //   pickerRef.current.blur();
-  // }
-
+  const [cursus, setCursus]: any = React.useState();
+  const [curriculums, setCurriculums]: any[] = React.useState();
 
   const getUserData = async () => {
     try {
@@ -48,12 +37,23 @@ const Profile = ({ route }) => {
       });
       if (res.data) {
         setUser(res.data)
-        console.log(JSON.stringify(user.cursus_users, null, 2));
+        const r = await axios.get(`${API_BASE_URL}/v2/users/${route.params.userId}/cursus_users`, {
+          headers: {
+            Authorization: `Bearer ${await AsyncStorage.getItem('@token')}`
+          }
+        });
+        setCurriculums(r.data)
       }
     } catch(e) {
-      console.error(e);
+      console.error(e); 
     }
   }
+
+  React.useEffect(() => {
+    if (curriculums && curriculums.length > 0) {
+      setCursus({ label: curriculums[0].cursus.name, value: curriculums[0].cursus.id });
+    }
+  }, [curriculums])
 
   React.useEffect(() => {
     if (!user) {
@@ -61,7 +61,8 @@ const Profile = ({ route }) => {
     }
   })
 
-  if (user) {
+  if (user && curriculums) {
+    console.log(curriculums.map(c => c.cursus.name));
     return (
       <View style={{ flex: 1, flexDirection: 'column' }}>
         <View style={ style.header }>
@@ -74,21 +75,20 @@ const Profile = ({ route }) => {
             <Text>Grade: { user.grade === 0 ? 'Novice' : 'Member' }</Text>
             <Text>Evaluation point: { user.correction_point }</Text>
             <Text>Campus: { user.campus.map(v => v.name) }</Text>
-            <Picker
-              selectedValue={cursus}
-              onValueChange={(itemValue) =>
-                setCursus(itemValue)
-              }>
-              {
-                user?.cursus_users.map(cursus =>
-                  <Picker.Item key={ cursus.id } label="ok" value="java" />
-                )
-              }
-            </Picker>
+            <View style={{ flex: 1, flexDirection: 'row' }}>
+              <RNPickerSelect
+                onValueChange={(value) => setCursus(value)}
+                items={
+                  curriculums.map(c => 
+                    ({ label: c.cursus.name, value: c.cursus.id })
+                  )
+                }
+              />
+            </View>
           </View>
         </View>
         <View style={ style.levelBar }>
-          <Text>{ user}</Text>
+          <Text></Text>
         </View>
       </View>
     );
