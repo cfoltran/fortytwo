@@ -5,9 +5,11 @@ import RNPickerSelect from 'react-native-picker-select';
 import { API_BASE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+let levelPercent = 0;
+
 const style = StyleSheet.create({
   header: {
-    flex: 1,
+    display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
@@ -18,8 +20,23 @@ const style = StyleSheet.create({
       borderRadius: 100
     }
   },
-  levelBar: {
-
+  levelContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    levelBar: {
+      width: '100%',
+      backgroundColor: 'rgba(50, 52, 57, 0.5)',
+      borderRadius: 5,
+  
+      currentLevel: {
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+        width: `${levelPercent}%`,
+        height: 10,
+        backgroundColor: '#2596be',
+      }
+    }
   }
 });
 
@@ -51,7 +68,7 @@ const Profile = ({ route }) => {
 
   React.useEffect(() => {
     if (curriculums && curriculums.length > 0) {
-      setCursus({ label: curriculums[0].cursus.name, value: curriculums[0].cursus.id });
+      setCursus(curriculums[0]);
     }
   }, [curriculums])
 
@@ -61,10 +78,12 @@ const Profile = ({ route }) => {
     }
   })
 
-  if (user && curriculums) {
-    console.log(curriculums.map(c => c.cursus.name));
+  if (user && curriculums && cursus) {
+    console.log(JSON.stringify(cursus, null, 2));
+    console.log(cursus.level.toString().split('.')[1] * 10);
+
     return (
-      <View style={{ flex: 1, flexDirection: 'column' }}>
+      <View style={{ display: 'flex', flexDirection: 'column', height: 180 }}>
         <View style={ style.header }>
           <Image
             source={{ uri: user.image.versions.small }}
@@ -77,18 +96,30 @@ const Profile = ({ route }) => {
             <Text>Campus: { user.campus.map(v => v.name) }</Text>
             <View style={{ flex: 1, flexDirection: 'row' }}>
               <RNPickerSelect
+                value={cursus}
                 onValueChange={(value) => setCursus(value)}
                 items={
-                  curriculums.map(c => 
-                    ({ label: c.cursus.name, value: c.cursus.id })
-                  )
+                  curriculums.map(c => ({
+                    label: c.cursus.name,
+                    value: c
+                  }))
                 }
               />
             </View>
           </View>
         </View>
-        <View style={ style.levelBar }>
-          <Text></Text>
+        <View>
+        <Text style={ style.levelContainer }>
+          Level { cursus.level }%
+        </Text>
+        </View>
+        <View style={{ padding: 10, display: 'flex', flexDirection: 'row' }}>
+          <View style={ style.levelContainer.levelBar }>
+            <View style={{
+              ...style.levelContainer.levelBar.currentLevel,
+              width: `${cursus.level.toString().split('.')[1] * 10}%`
+            }}></View>
+          </View>
         </View>
       </View>
     );
