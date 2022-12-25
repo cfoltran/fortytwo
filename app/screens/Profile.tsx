@@ -1,9 +1,11 @@
 import { View, Image, Text, StyleSheet } from 'react-native';
-import React, { useRef } from 'react';
+import React, { Dispatch, SetStateAction, useRef } from 'react';
 import axios from 'axios';
 import RNPickerSelect from 'react-native-picker-select';
 import { API_BASE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { User } from '../models/user.model';
+import { CursusUser } from '../models/user.model';
 
 let levelPercent = 0;
 
@@ -24,6 +26,7 @@ const style = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    textAlign: 'center',
     levelBar: {
       width: '100%',
       backgroundColor: 'rgba(50, 52, 57, 0.5)',
@@ -41,8 +44,8 @@ const style = StyleSheet.create({
 });
 
 const Profile = ({ route }) => {
-  const [user, setUser]: any[] = React.useState();
-  const [cursus, setCursus]: any = React.useState();
+  const [user, setUser]: [User, Dispatch<SetStateAction<User>>] = React.useState();
+  const [cursus, setCursus]: [ CursusUser, Dispatch<SetStateAction<CursusUser>>] = React.useState();
   const [curriculums, setCurriculums]: any[] = React.useState();
 
   const getUserData = async () => {
@@ -79,8 +82,7 @@ const Profile = ({ route }) => {
   })
 
   if (user && curriculums && cursus) {
-    console.log(JSON.stringify(cursus, null, 2));
-    console.log(cursus.level.toString().split('.')[1] * 10);
+    console.log(JSON.stringify(user, null, 2));
 
     return (
       <View style={{ display: 'flex', flexDirection: 'column', height: 180 }}>
@@ -117,9 +119,21 @@ const Profile = ({ route }) => {
           <View style={ style.levelContainer.levelBar }>
             <View style={{
               ...style.levelContainer.levelBar.currentLevel,
-              width: `${cursus.level.toString().split('.')[1] * 10}%`
+              width: `${+cursus.level.toString().split('.')[1] * 10}%`
             }}></View>
           </View>
+        </View>
+        <View>
+          <Text>Projects</Text>
+          {
+            user.projects_users.filter(p => p.cursus_ids[0] != cursus.id).map(project => {
+              return (
+                <View>
+                  <Text>{ project.project.name }</Text>
+                </View>
+              );
+            })
+          }
         </View>
       </View>
     );
