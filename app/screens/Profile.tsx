@@ -6,6 +6,7 @@ import { API_BASE_URL } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../models/user.model';
 import { CursusUser } from '../models/user.model';
+import { cs } from '../style/common.style';
 
 let levelPercent = 0;
 
@@ -40,6 +41,17 @@ const style = StyleSheet.create({
         backgroundColor: '#2596be',
       }
     }
+  },
+  projects: {
+    display: 'flex',
+    flexDirection: 'row',
+
+    projectCard: {
+      display: 'flex',
+      flexDirection: 'column',
+      padding: 10,
+      width: 100,
+    }
   }
 });
 
@@ -49,6 +61,7 @@ const Profile = ({ route }) => {
   const [curriculums, setCurriculums]: any[] = React.useState();
 
   const getUserData = async () => {
+    console.log(await AsyncStorage.getItem('@token'));
     try {
       const res = await axios.get(`${API_BASE_URL}/v2/users/${route.params.userId}`, {
         headers: {
@@ -82,8 +95,6 @@ const Profile = ({ route }) => {
   })
 
   if (user && curriculums && cursus) {
-    console.log(JSON.stringify(user, null, 2));
-
     return (
       <View style={{ display: 'flex', flexDirection: 'column', height: 180 }}>
         <View style={ style.header }>
@@ -111,9 +122,9 @@ const Profile = ({ route }) => {
           </View>
         </View>
         <View>
-        <Text style={ style.levelContainer }>
-          Level { cursus.level }%
-        </Text>
+          <Text style={ style.levelContainer }>
+            Level { cursus.level }%
+          </Text>
         </View>
         <View style={{ padding: 10, display: 'flex', flexDirection: 'row' }}>
           <View style={ style.levelContainer.levelBar }>
@@ -123,17 +134,20 @@ const Profile = ({ route }) => {
             }}></View>
           </View>
         </View>
-        <View>
-          <Text>Projects</Text>
+        <View style={ cs.container }>
+          <Text style={ cs.h2 }>Projects</Text>
+          <View style={ style.projects }>
           {
-            user.projects_users.filter(p => p.cursus_ids[0] != cursus.id).map(project => {
+            user.projects_users.filter(p => { console.log(p.cursus_ids[0], cursus.id); return  p.cursus_ids[0] == cursus.cursus.id }).map(project => {
               return (
-                <View>
+                <View style={ style.projects.projectCard }>
                   <Text>{ project.project.name }</Text>
+                  <Text>{ project.final_mark }</Text>
                 </View>
               );
             })
           }
+          </View>
         </View>
       </View>
     );
