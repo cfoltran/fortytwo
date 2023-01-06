@@ -1,4 +1,4 @@
-import { View, Image, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Image, Text, StyleSheet } from 'react-native';
 import React, { Dispatch, SetStateAction, useRef } from 'react';
 import axios from 'axios';
 import RNPickerSelect from 'react-native-picker-select';
@@ -50,7 +50,7 @@ const style = StyleSheet.create({
       display: 'flex',
       flexDirection: 'column',
       padding: 10,
-      width: 100,
+      width: 120,
     }
   }
 });
@@ -136,19 +136,33 @@ const Profile = ({ route }) => {
         </View>
         <View style={ cs.container }>
           <Text style={ cs.h2 }>Projects</Text>
-          <View style={ style.projects }>
+          <ScrollView horizontal={true}>
+            <View style={ style.projects }>
+            {
+              user.projects_users.filter(p => { console.log(p.cursus_ids[0], cursus.id); return  p.cursus_ids[0] == cursus.cursus.id }).map(project => {
+                return (
+                  <View style={ style.projects.projectCard }>
+                    <Text>{ project.project.name }</Text>
+                    <Text>{ project.final_mark }</Text>
+                    <Text>{ project.status }</Text>
+                  </View>
+                );
+              })
+            }
+            </View>
+          </ScrollView>
+        </View>
+        {/* <View>
           {
-            user.projects_users.filter(p => { console.log(p.cursus_ids[0], cursus.id); return  p.cursus_ids[0] == cursus.cursus.id }).map(project => {
+            cursus.skills.map(skill => {
               return (
-                <View style={ style.projects.projectCard }>
-                  <Text>{ project.project.name }</Text>
-                  <Text>{ project.final_mark }</Text>
+                <View>
+                  { skill.level }
                 </View>
-              );
+              )
             })
           }
-          </View>
-        </View>
+        </View> */}
       </View>
     );
   }
