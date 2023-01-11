@@ -7,10 +7,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../models/user.model';
 import { CursusUser } from '../models/user.model';
 import { cs } from '../style/common.style';
+import { SvgCssUri } from 'react-native-svg';
 
 let levelPercent = 0;
-
-const skillsColor = [ '#FFCC80', '#FFF59D', '#E6EE9C', '#80CBC4', '#81D4FA', '#90CAF9', '#9FA8DA', '#B39DDB', '#CE93D8', '#E1BEE7', '#CE93D8', '#F48FB1', '#EF9A9A', '#F06292', '#F06292' ];
 
 const style = StyleSheet.create({
   header: {
@@ -43,18 +42,19 @@ const style = StyleSheet.create({
         backgroundColor: '#2596be',
       }
     }
+  },  
+  projectList: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 10,
+    width: '100%',
   },
-  projects: {
-    // display: 'flex',
-    flexDirection: 'column',
-
-    projectList: {
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      padding: 10,
-      width: '100%',
-    }
+  badge: {
+    display: 'flex',
+    flexDirection: 'row',
+    height: 50,
+    marginBottom: 5,
   }
 });
 
@@ -96,7 +96,6 @@ const Profile = ({ route }) => {
         getUserData();
     }
   })
-
   if (user && curriculums && cursus) {
     return (
       <View style={{ display: 'flex', flexDirection: 'column', height: 180 }}>
@@ -141,12 +140,34 @@ const Profile = ({ route }) => {
           <Text style={ cs.h2 }>Projects</Text>
           <ScrollView>
             {
-              user.projects_users.filter(p =>   p.cursus_ids[0] == cursus.cursus.id).map(project => {
+              user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
                 return (
-                  <View style={ style.projects.projectList }>
+                  <View style={ style.projectList }>
                     <Text>{ project.project.name }</Text>
                     <Text>{ project.final_mark }</Text>
                     <Text>{ project.status }</Text>
+                  </View>
+                );
+              })
+            }
+          </ScrollView>
+        </View>
+        <View style={ cs.container }>
+          <Text style={ cs.h2 }>Achievements</Text>
+          <ScrollView>
+            {
+              user.achievements.map(badge => {
+                return (
+                  <View style={ style.badge }>
+                    <SvgCssUri
+                      width="50"
+                      height="50"
+                      uri={ API_BASE_URL + badge.image }
+                    />
+                    <View style={{ padding: 5 }}>
+                      <Text>{ badge.name } </Text>
+                      <Text>{ badge.description } </Text>
+                    </View>
                   </View>
                 );
               })
