@@ -10,6 +10,8 @@ import { cs } from '../style/common.style';
 
 let levelPercent = 0;
 
+const skillsColor = [ '#FFCC80', '#FFF59D', '#E6EE9C', '#80CBC4', '#81D4FA', '#90CAF9', '#9FA8DA', '#B39DDB', '#CE93D8', '#E1BEE7', '#CE93D8', '#F48FB1', '#EF9A9A', '#F06292', '#F06292' ];
+
 const style = StyleSheet.create({
   header: {
     display: 'flex',
@@ -43,14 +45,15 @@ const style = StyleSheet.create({
     }
   },
   projects: {
-    display: 'flex',
-    flexDirection: 'row',
+    // display: 'flex',
+    flexDirection: 'column',
 
-    projectCard: {
+    projectList: {
       display: 'flex',
-      flexDirection: 'column',
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       padding: 10,
-      width: 120,
+      width: '100%',
     }
   }
 });
@@ -136,12 +139,11 @@ const Profile = ({ route }) => {
         </View>
         <View style={ cs.container }>
           <Text style={ cs.h2 }>Projects</Text>
-          <ScrollView horizontal={true}>
-            <View style={ style.projects }>
+          <ScrollView>
             {
-              user.projects_users.filter(p => { console.log(p.cursus_ids[0], cursus.id); return  p.cursus_ids[0] == cursus.cursus.id }).map(project => {
+              user.projects_users.filter(p =>   p.cursus_ids[0] == cursus.cursus.id).map(project => {
                 return (
-                  <View style={ style.projects.projectCard }>
+                  <View style={ style.projects.projectList }>
                     <Text>{ project.project.name }</Text>
                     <Text>{ project.final_mark }</Text>
                     <Text>{ project.status }</Text>
@@ -149,20 +151,8 @@ const Profile = ({ route }) => {
                 );
               })
             }
-            </View>
           </ScrollView>
         </View>
-        {/* <View>
-          {
-            cursus.skills.map(skill => {
-              return (
-                <View>
-                  { skill.level }
-                </View>
-              )
-            })
-          }
-        </View> */}
       </View>
     );
   }
