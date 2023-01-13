@@ -1,13 +1,14 @@
-import { ScrollView, View, Image, Text, StyleSheet } from 'react-native';
+import { ScrollView, View, Image, Text, StyleSheet, Dimensions } from 'react-native';
 import React, { Dispatch, SetStateAction, useRef } from 'react';
 import axios from 'axios';
 import RNPickerSelect from 'react-native-picker-select';
-import { API_BASE_URL } from '@env';
+import { API_BASE_URL, DEBUG } from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { User } from '../models/user.model';
 import { CursusUser } from '../models/user.model';
 import { cs } from '../style/common.style';
 import { SvgCssUri } from 'react-native-svg';
+import { BarChart } from "react-native-chart-kit";
 
 let levelPercent = 0;
 
@@ -81,7 +82,9 @@ const ProfileContent = ({ userId }) => {
         setCurriculums(r.data)
       }
     } catch(e) {
-      console.error(e); 
+      if (DEBUG) {
+        console.error(e); 
+      }
     }
   }
 
@@ -136,44 +139,80 @@ const ProfileContent = ({ userId }) => {
             }}></View>
           </View>
         </View>
-        <View style={ cs.container }>
-          <Text style={ cs.h2 }>Projects</Text>
-          <ScrollView>
-            {
-              user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
-                return (
-                  <View style={ style.projectList }>
-                    <Text>{ project.project.name }</Text>
-                    <Text>{ project.final_mark }</Text>
-                    <Text>{ project.status }</Text>
-                  </View>
-                );
-              })
-            }
-          </ScrollView>
-        </View>
-        <View style={ cs.container }>
-          <Text style={ cs.h2 }>Achievements</Text>
-          <ScrollView>
-            {
-              user.achievements.map(badge => {
-                return (
-                  <View style={ style.badge }>
-                    <SvgCssUri
-                      width="50"
-                      height="50"
-                      uri={ API_BASE_URL + badge.image }
-                    />
-                    <View style={{ padding: 5 }}>
-                      <Text>{ badge.name } </Text>
-                      <Text>{ badge.description } </Text>
-                    </View>
-                  </View>
-                );
-              })
-            }
-          </ScrollView>
-        </View>
+        { +cursus.level > 0 ? (
+          <View>
+            <View>
+              <ScrollView horizontal={true}>
+                <BarChart
+                  data={{
+                    labels: cursus.skills.map(skill => skill.name),
+                    datasets: [{
+                      data: cursus.skills.map(skill => skill.level),
+                    }],
+                  }}
+                  width={600}
+                  height={100}
+                  yAxisLabel=""
+                  yAxisSuffix=''
+                  yAxisInterval={1}
+                  verticalLabelRotation={30}
+                  chartConfig={{
+                    backgroundGradientFromOpacity: 0,
+                    backgroundGradientToOpacity: 0,
+                    decimalPlaces: 1,
+                    color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    style: { borderRadius: 16 },
+                    propsForDots: {
+                      r: '1',
+                      stroke: '#ffa726'
+                    }
+                  }}
+                  style={{
+                    marginVertical: 8,
+                  }}
+                />
+              </ScrollView>
+            </View>
+            <View style={ cs.container }>
+              <Text style={ cs.h2 }>Projects</Text>
+              <ScrollView style={{ height: 180 }}>
+                {
+                  user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
+                    return (
+                      <View style={ style.projectList }>
+                        <Text>{ project.project.name }</Text>
+                        <Text>{ project.status === 'finished' ? project.final_mark : project.status }</Text>
+                      </View>
+                    );
+                  })
+                }
+              </ScrollView>
+            </View>
+            <View style={ cs.container }>
+              <Text style={ cs.h2 }>Achievements</Text>
+              <ScrollView>
+                {
+                  user.achievements.map(badge => {
+                    return (
+                      <View style={ style.badge }>
+                        <SvgCssUri
+                          width="50"
+                          height="50"
+                          uri={ API_BASE_URL + badge.image }
+                        />
+                        <View style={{ padding: 5 }}>
+                          <Text>{ badge.name }</Text>
+                          <Text>{ badge.description }</Text>
+                        </View>
+                      </View>
+                    );
+                  })
+                }
+              </ScrollView>
+            </View>
+          </View>
+       ) : ( <Text>no datas</Text> )}
       </View>
     );
   }
