@@ -82,7 +82,7 @@ const ProfileContent = ({ userId }) => {
         setCurriculums(r.data)
       }
     } catch(e) {
-      if (DEBUG as boolean) {
+      if (DEBUG === 'yes') {
         console.error(e); 
       }
     }
@@ -102,40 +102,42 @@ const ProfileContent = ({ userId }) => {
   if (user && curriculums && cursus) {
     return (
       <View style={{ display: 'flex', flexDirection: 'column' }}>
-        <View style={ style.header }>
-          <Image
-            source={{ uri: user.image.versions.small }}
-            style={ style.header.image }
-          />
-          <View style={{ width: '70%' }}>
-            <Text>{user.displayname} {user.login}</Text>
-            <Text>Evaluation point: { user.correction_point }</Text>
-            <Text>Campus: { user.campus.map(v => v.name) }</Text>
-            <View style={{ flex: 1, flexDirection: 'row' }}>
-              <RNPickerSelect
-                value={cursus}
-                onValueChange={(value) => setCursus(value)}
-                items={
-                  curriculums.map(c => ({
-                    label: c.cursus.name,
-                    value: c
-                  }))
-                }
-              />
+        <View style={{ height: 140 }}>
+          <View style={ style.header }>
+            <Image
+              source={{ uri: user.image.versions.small }}
+              style={ style.header.image }
+            />
+            <View style={{ width: '70%' }}>
+              <Text>{user.displayname} {user.login}</Text>
+              <Text>Evaluation point: { user.correction_point }</Text>
+              <Text>Campus: { user.campus.map(v => v.name) }</Text>
+              <View style={{ flex: 1, flexDirection: 'row' }}>
+                <RNPickerSelect
+                  value={cursus}
+                  onValueChange={(value) => setCursus(value)}
+                  items={
+                    curriculums.map(c => ({
+                      label: c.cursus.name,
+                      value: c
+                    }))
+                  }
+                />
+              </View>
             </View>
           </View>
-        </View>
-        <View>
-          <Text style={ style.levelContainer }>
-            Level { cursus.level }%
-          </Text>
-        </View>
-        <View style={{ padding: 10, display: 'flex', flexDirection: 'row' }}>
-          <View style={ style.levelContainer.levelBar }>
-            <View style={{
-              ...style.levelContainer.levelBar.currentLevel,
-              width: `${+cursus.level.toString().split('.')[1] * 10}%`
-            }}></View>
+          <View>
+            <Text style={ style.levelContainer }>
+              Level { cursus.level }%
+            </Text>
+          </View>
+          <View style={{ padding: 10, display: 'flex', flexDirection: 'row' }}>
+            <View style={ style.levelContainer.levelBar }>
+              <View style={{
+                ...style.levelContainer.levelBar.currentLevel,
+                width: `${cursus.level % 1 * 100}%`
+              }}></View>
+            </View>
           </View>
         </View>
         { +cursus.level > 0 ? (
@@ -151,7 +153,7 @@ const ProfileContent = ({ userId }) => {
                     }],
                   }}
                   width={700}
-                  height={180}
+                  height={(Dimensions.get('window').height - 140) / 4}
                   yAxisLabel=""
                   yAxisSuffix=''
                   yAxisInterval={1}
@@ -174,13 +176,13 @@ const ProfileContent = ({ userId }) => {
                 />
               </ScrollView>
             </View>) : <Text></Text>}
-            <View style={ cs.container }>
+            <View style={{ ...cs.container, height: (Dimensions.get('window').height - 140) / 3 }}>
               <Text style={ cs.h2 }>Projects</Text>
               <ScrollView style={{ height: 150 }}>
                 {
                   user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
                     return (
-                      <View style={ style.projectList }>
+                      <View style={ style.projectList } key={ project.id }>
                         <Text>{ project.project.name }</Text>
                         <Text>{ project.status === 'finished' ? project.final_mark : project.status }</Text>
                       </View>
@@ -189,16 +191,16 @@ const ProfileContent = ({ userId }) => {
                 }
               </ScrollView>
             </View>
-            <View style={ cs.container }>
+            <View style={{ ...cs.container, height: (Dimensions.get('window').height - 140) / 3 }}>
               <Text style={ cs.h2 }>Achievements</Text>
               <ScrollView>
                 {
                   user.achievements.map(badge => {
                     return (
-                      <View style={ style.badge }>
+                      <View style={ style.badge } key={ badge.id }>
                         <SvgCssUri
-                          width="50"
-                          height="50"
+                          width='50'
+                          height='50'
                           uri={ API_BASE_URL + badge.image }
                         />
                         <View style={{ padding: 5 }}>

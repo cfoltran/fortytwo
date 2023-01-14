@@ -8,7 +8,6 @@ import Home from './screens/Home';
 import Search from './screens/Search';
 import Profile from './screens/Profile';
 import { Button } from 'react-native';
-import { isValidToken } from './screens/Login';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -20,7 +19,7 @@ function HomeTabScreen() {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'Home') {
+          if (route.name === 'Index') {
             iconName = focused ? 'ios-home' : 'ios-home-outline';
           } else if (route.name === 'Search') {
             iconName = focused ? 'ios-search' : 'ios-search-outline';
@@ -32,17 +31,13 @@ function HomeTabScreen() {
         tabBarInactiveTintColor: 'gray',
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="Index" component={Home} />
       <Tab.Screen name="Search" component={Search} />
     </Tab.Navigator>
   );
 }
 
 function App() {
-  React.useEffect(() => {
-    isValidToken()
-  });
-
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>

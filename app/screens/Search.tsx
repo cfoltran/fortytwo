@@ -24,7 +24,7 @@ const Search = ({ navigation, route }) => {
       });
       onChangeUsers(res.data);
     } catch (e) {
-      if (DEBUG as boolean) {
+      if (DEBUG === 'yes') {
         console.error(e);
       }
     }

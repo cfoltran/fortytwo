@@ -19,13 +19,29 @@ export const isValidToken = async () => {
     });
     return res.data.expires_in_seconds > 5;
   } catch (e) {
-    if (DEBUG as boolean) {
-      console.log('🛑');
+    if (DEBUG === 'yes') {
       console.error(e);
     }
     return false;
   }
 };
+
+export const getToken = async () => {
+  try {
+    await AsyncStorage.removeItem('@code');
+    const res = await axios.post(`${baseURL}/oauth/token`, {
+      'grant_type': 'client_credentials',
+      'client_id': OAUTH_CLIENT_ID,
+      'client_secret': OAUTH_SECRET,
+      code: await AsyncStorage.getItem('@code')
+    });
+    await AsyncStorage.setItem('@token', res.data.access_token ? res.data.access_token : null);
+  } catch (e) {
+    if (DEBUG === 'yes') {
+      console.error(e);
+    }
+  }
+}
 
 const Login = ({ navigation, route }) => {
   const [request, response, promptAsync] = useAuthRequest({
@@ -35,23 +51,6 @@ const Login = ({ navigation, route }) => {
   }, {
     authorizationEndpoint: `${baseURL}/oauth/authorize`
   });
-
-  const getToken = async () => {
-    try {
-      await AsyncStorage.removeItem('@code');
-      const res = await axios.post(`${baseURL}/oauth/token`, {
-        'grant_type': 'client_credentials',
-        'client_id': OAUTH_CLIENT_ID,
-        'client_secret': OAUTH_SECRET,
-        code: await AsyncStorage.getItem('@code')
-      });
-      await AsyncStorage.setItem('@token', res.data.access_token ? res.data.access_token : null);
-    } catch (e) {
-      if (DEBUG as boolean) {
-        console.error(e);
-      }
-    }
-  }
 
   React.useEffect(() => {
     const getCode = async () => {
@@ -64,7 +63,6 @@ const Login = ({ navigation, route }) => {
 
   React.useEffect(() => {
     const authGuard = async () => {
-      console.warn('auth')
       if (await isValidToken()) {
         navigation.replace('Home');
       } else {
