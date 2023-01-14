@@ -3,7 +3,7 @@ import React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest } from 'expo-auth-session';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { OAUTH_CLIENT_ID, OAUTH_SECRET, API_BASE_URL } from '@env';
+import { OAUTH_CLIENT_ID, OAUTH_SECRET, API_BASE_URL, DEBUG } from '@env';
 import axios from 'axios';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -19,7 +19,9 @@ export const isValidToken = async () => {
     });
     return res.data.expires_in_seconds > 5;
   } catch (e) {
-    console.error(e);
+    if (DEBUG as boolean) {
+      console.error(e);
+    }
     return false;
   }
 };
@@ -46,7 +48,9 @@ const Login = ({ navigation, route }) => {
       });
       await AsyncStorage.setItem('@token', res.data.access_token ? res.data.access_token : null);
     } catch (e) {
-      console.error(e);
+      if (DEBUG as boolean) {
+        console.error(e);
+      }
     }
   }
 

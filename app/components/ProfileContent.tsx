@@ -21,8 +21,8 @@ const style = StyleSheet.create({
     paddingBottom: 0,
 
     image: {
-      height: 100,
-      width: 100,
+      height: 80,
+      width: 80,
       borderRadius: 100
     }
   },
@@ -66,7 +66,6 @@ const ProfileContent = ({ userId }) => {
   const [curriculums, setCurriculums]: any[] = React.useState();
 
   const getUserData = async () => {
-    console.log(await AsyncStorage.getItem('@token'));
     try {
       const res = await axios.get(`${API_BASE_URL}/v2/users/${userId}`, {
         headers: {
@@ -83,7 +82,7 @@ const ProfileContent = ({ userId }) => {
         setCurriculums(r.data)
       }
     } catch(e) {
-      if (DEBUG) {
+      if (DEBUG as boolean) {
         console.error(e); 
       }
     }
@@ -141,6 +140,7 @@ const ProfileContent = ({ userId }) => {
         </View>
         { +cursus.level > 0 ? (
           <View>
+            { user.id !== 40591 ? (
             <View>
               <ScrollView horizontal={true}>
                 <BarChart
@@ -173,10 +173,10 @@ const ProfileContent = ({ userId }) => {
                   }}
                 />
               </ScrollView>
-            </View>
+            </View>) : <Text></Text>}
             <View style={ cs.container }>
               <Text style={ cs.h2 }>Projects</Text>
-              <ScrollView style={{ height: 130 }}>
+              <ScrollView style={{ height: 150 }}>
                 {
                   user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
                     return (

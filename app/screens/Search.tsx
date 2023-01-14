@@ -1,5 +1,5 @@
 import { View, TextInput, StyleSheet, ScrollView } from 'react-native';
-import { API_BASE_URL } from '@env';
+import { API_BASE_URL, DEBUG } from '@env';
 import ProfileItems from '../components/ProfileItems'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import React from 'react';
@@ -24,7 +24,9 @@ const Search = ({ navigation, route }) => {
       });
       onChangeUsers(res.data);
     } catch (e) {
-      console.error(e);
+      if (DEBUG as boolean) {
+        console.error(e);
+      }
     }
   }
 
