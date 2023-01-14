@@ -10,7 +10,7 @@ const baseURL = API_BASE_URL;
 const Search = ({ navigation, route }) => {
   const [text, onChangeText] = React.useState("");
   const [users, onChangeUsers] = React.useState(); 
-  const [timePassed, setTimeout] = React.useState();
+  const [timePassed, setTimer]: any = React.useState();
 
   const search = async () => {
     try {
@@ -34,7 +34,7 @@ const Search = ({ navigation, route }) => {
     if (timePassed) {
       clearTimeout(timePassed);
     }
-    setTimeout(() => search(), 2000);
+    setTimer(setTimeout(() => search(), 1000));
   }, [text]);
 
   return (

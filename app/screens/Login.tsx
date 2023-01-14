@@ -20,6 +20,7 @@ export const isValidToken = async () => {
     return res.data.expires_in_seconds > 5;
   } catch (e) {
     if (DEBUG as boolean) {
+      console.log('🛑');
       console.error(e);
     }
     return false;
@@ -27,8 +28,6 @@ export const isValidToken = async () => {
 };
 
 const Login = ({ navigation, route }) => {
-  const [code, setCode] = React.useState();
-
   const [request, response, promptAsync] = useAuthRequest({
     clientId: OAUTH_CLIENT_ID,
     scopes: ['public', 'projects'],
@@ -65,6 +64,7 @@ const Login = ({ navigation, route }) => {
 
   React.useEffect(() => {
     const authGuard = async () => {
+      console.warn('auth')
       if (await isValidToken()) {
         navigation.replace('Home');
       } else {
