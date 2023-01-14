@@ -18,6 +18,7 @@ const style = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 20,
+    paddingBottom: 0,
 
     image: {
       height: 100,
@@ -101,7 +102,7 @@ const ProfileContent = ({ userId }) => {
   })
   if (user && curriculums && cursus) {
     return (
-      <View style={{ display: 'flex', flexDirection: 'column', height: 180 }}>
+      <View style={{ display: 'flex', flexDirection: 'column' }}>
         <View style={ style.header }>
           <Image
             source={{ uri: user.image.versions.small }}
@@ -109,7 +110,6 @@ const ProfileContent = ({ userId }) => {
           />
           <View style={{ width: '70%' }}>
             <Text>{user.displayname} {user.login}</Text>
-            <Text>Grade: { user.grade === 0 ? 'Novice' : 'Member' }</Text>
             <Text>Evaluation point: { user.correction_point }</Text>
             <Text>Campus: { user.campus.map(v => v.name) }</Text>
             <View style={{ flex: 1, flexDirection: 'row' }}>
@@ -150,12 +150,12 @@ const ProfileContent = ({ userId }) => {
                       data: cursus.skills.map(skill => skill.level),
                     }],
                   }}
-                  width={600}
-                  height={100}
+                  width={700}
+                  height={180}
                   yAxisLabel=""
                   yAxisSuffix=''
                   yAxisInterval={1}
-                  verticalLabelRotation={30}
+                  verticalLabelRotation={-8}
                   chartConfig={{
                     backgroundGradientFromOpacity: 0,
                     backgroundGradientToOpacity: 0,
@@ -166,17 +166,17 @@ const ProfileContent = ({ userId }) => {
                     propsForDots: {
                       r: '1',
                       stroke: '#ffa726'
+                    },
+                    propsForLabels: {
+                      fontSize: 8
                     }
-                  }}
-                  style={{
-                    marginVertical: 8,
                   }}
                 />
               </ScrollView>
             </View>
             <View style={ cs.container }>
               <Text style={ cs.h2 }>Projects</Text>
-              <ScrollView style={{ height: 180 }}>
+              <ScrollView style={{ height: 130 }}>
                 {
                   user.projects_users.filter(p => p.cursus_ids[0] == cursus.cursus.id).map(project => {
                     return (
